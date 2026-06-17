@@ -10,6 +10,22 @@ Most file security tools pick one lane. Encrypt everything and you get strong co
 
 
 
+## Repository layout
+
+```
+EFS_TDM/
+├── server_pkg/          # server, core logic, config, certs, sample data
+├── client_pkg/          # Python client source
+├── portable_client/     # ready-to-run Linux binary distribution
+├── portable_client_win/ # ready-to-run Windows binary distribution
+├── tests/               # full test suite
+└── scripts/             # cert generation, sample data, binary build scripts
+```
+
+`conftest.py` at the project root adds both packages to `sys.path` so tests resolve imports without path changes.
+
+
+
 ## Features
 
 - Encrypts every file with AES-256-GCM. Nonce, tag, and ciphertext are all stored in one `.enc` blob, so tampering with even one byte causes decryption to fail outright rather than silently returning garbage.
@@ -20,6 +36,7 @@ Most file security tools pick one lane. Encrypt everything and you get strong co
 - Logs every sensitive action to an audit table where each row is chained to the previous one with an HMAC, so any retroactive edit, deletion, or reordering breaks the chain and gets flagged by a background integrity monitor.
 - Offers two ways in: a direct terminal login, or a browser based login page (Flask, HTTPS, CSRF protected) that hands a session token back to the terminal without it ever appearing in a URL.
 - Ships as a Nuitka compiled standalone binary for Linux and Windows, so end users do not need a Python install.
+- Keeps all tunable behavior (role permissions, password policy, rate limits, session TTL, ACL defaults, audit rotation, PII masking patterns) in JSON config files under `server_pkg/config/`, so admins can adjust the system without touching any code.
 
 
 
@@ -43,6 +60,8 @@ Python 3.13, the `cryptography` library for AES-256-GCM and HKDF, Flask for the 
 | manage users | Y | N | N | N | N | N |
 
 Auditor is intentionally narrow: it can query and verify the audit log but has zero VFS navigation rights, not even `ls`. That separation exists so a compliance reviewer can audit the system without also being able to read file content.
+
+This is the default configuration. Roles and their permission sets are defined in `server_pkg/config/roles.json` and can be modified without touching any code. Changes take effect on the next server start.
 
 ## Security measures, briefly
 
@@ -131,20 +150,31 @@ EFS:/> audit-log --limit 10
 EFS:/> exit
 ```
 
-The compiled binary (no Python install required) only exposes `web-login`, `shell`, and `configure`. All file operations happen inside the interactive shell once logged in.
+The compiled binary (no Python install required) only exposes `web-login`, `shell`, and `configure`. All file operations happen inside the interactive shell once logged in. On first connect the binary fetches and pins the server TLS certificate automatically (trust-on-first-use).
 
+**Linux** (`portable_client/`):
 ```bash
 ./EFS configure --host <server-ip> --port 8443
 ./EFS web-login
 ```
 
+**Windows** (`portable_client_win/`):
+```cmd
+EFS.bat configure --host <server-ip> --port 8443
+EFS.bat web-login
+```
+
+`EFS.bat` handles PATH setup for the bundled DLLs and expects `EFS_bin.exe` inside `libs\`. If you want to run `EFS_bin.exe` directly without the launcher, copy it out of `portable_client_win\` to a standalone location and add `portable_client_win\libs\` to your `PATH` manually so the bundled DLLs are found.
+
 
 
 ## Additional notes
 
-A separate reference document is included alongside this README covering architecture details, the full command list, and a few other implementation notes that did not belong here. Worth a look if you need the exact database schema, the complete command reference, or a deeper explanation of how a particular module works.
+See [INTERNALS.md](INTERNALS.md) for architecture details, database schema, key hierarchy, config file reference, audit integrity monitor, VFS design, shell command overview, and disaster recovery. See [COMMANDS.md](COMMANDS.md) for the full command reference with examples.
 
-A handful of things are easy to miss on first use: the `login` command segfaults in the compiled binary on both platforms due to a `getpass`/`termios` interaction with the Nuitka runtime, so `web-login` is the only supported way to authenticate from the binary. Tab completion in the shell requires `pyreadline3` on Windows and falls back gracefully if it is not present. Masking rules, role permissions, and most server tunables live in JSON config files under `server_pkg/config/`, so adjusting them does not require touching any code.
+### Things easy to miss on first use
+
+The `login` command segfaults in the compiled binary on both platforms due to a `getpass`/`termios` interaction with the Nuitka runtime, so `web-login` is the only supported way to authenticate from the binary. Tab completion in the shell requires `pyreadline3` on Windows and falls back gracefully if it is not present. Masking rules, role permissions, and most server tunables live in JSON config files under `server_pkg/config/`, so adjusting them does not require touching any code.
 
 ## License
 

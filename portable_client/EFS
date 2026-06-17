@@ -1,0 +1,4 @@
+#!/bin/sh
+DIR="$(cd "$(dirname "$0")" && pwd)"
+export LD_LIBRARY_PATH="$DIR/libs:$LD_LIBRARY_PATH"
+exec "$DIR/libs/EFS_bin" "$@"

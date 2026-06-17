@@ -1,0 +1,49 @@
+# EFS-TDM Python Dependencies
+
+# Cryptography
+cryptography>=43.0.0
+
+# PDF handling
+PyMuPDF>=1.24.0
+
+# Web login UI
+flask>=3.0.0
+
+# Data manipulation / spreadsheet masking
+pandas>=2.2.0
+openpyxl>=3.1.0
+xlrd>=2.0.1
+
+# PDF image masking (OCR path)
+pytesseract>=0.3.10
+Pillow>=10.0.0
+
+# Document masking
+python-docx>=1.1.0
+odfpy>=1.4.1
+python-pptx>=0.6.23
+
+# Synthetic data generation
+Faker>=28.0.0
+
+# Client binary compilation (Linux build)
+nuitka>=2.0
+
+# Testing
+pytest>=8.3.0
+pytest-cov>=6.0.0
+
+# Performance profiling (stdlib module, no install needed)
+# cProfile - built-in
+
+# Database (stdlib module, no install needed)
+# sqlite3 - built-in
+
+# TLS/SSL (stdlib module, no install needed)
+# ssl - built-in
+
+# CLI parsing (stdlib module, no install needed)
+# argparse - built-in
+
+# Regex (stdlib module, no install needed)
+# re - built-in

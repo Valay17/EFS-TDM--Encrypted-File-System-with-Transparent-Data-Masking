@@ -1,0 +1,54 @@
+{
+  "rules": {
+    "ssn": {
+      "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+      "replacement": "***-**-****",
+      "description": "US Social Security Number"
+    },
+    "email": {
+      "pattern": "\\b[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}\\b",
+      "replacement": "***@***.***",
+      "description": "Email address"
+    },
+    "credit_card": {
+      "pattern": "\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b",
+      "replacement": "****-****-****-****",
+      "description": "Credit card number (16 digits, optional separators)"
+    },
+    "phone": {
+      "pattern": "\\b\\d{3}[-. ]?\\d{3}[-. ]?\\d{4}\\b",
+      "replacement": "***-***-****",
+      "description": "US phone number (10 digits, optional separators)"
+    }
+  },
+  "role_profiles": {
+    "Admin": [],
+    "Analyst": [
+      "ssn",
+      "email",
+      "credit_card",
+      "phone"
+    ],
+    "Contributor": [
+      "ssn",
+      "credit_card"
+    ],
+    "Viewer": [
+      "ssn",
+      "email",
+      "credit_card",
+      "phone"
+    ],
+    "Guest": [
+      "ssn",
+      "email",
+      "credit_card",
+      "phone"
+    ]
+  },
+  "name_masking": {
+    "enabled": false,
+    "replacement": "[REDACTED]",
+    "description": "Name masking is flag-controlled, not auto-detected. Enable per deployment."
+  }
+}

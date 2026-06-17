@@ -1,0 +1,63 @@
+Windows Build Requirements
+==========================
+
+These are the requirements to build the EFS Windows client binary on a Windows machine.
+
+1. Python
+---------
+- Python 3.11 or 3.13 (must match the version used on Linux for consistency)
+- Download from: https://www.python.org/downloads/
+- During install: check "Add Python to PATH"
+
+2. C Compiler
+-------------
+Nuitka requires a C compiler on Windows. Either of:
+- MinGW-w64 (free, lightweight): https://www.mingw-w64.org/
+- Visual Studio Build Tools (free):
+  Download "Build Tools for Visual Studio" from Microsoft
+  Select workload: "Desktop development with C++"
+
+Nuitka will prompt you to install one automatically on first run if missing.
+
+3. Nuitka
+---------
+Install inside the project venv:
+  venv\Scripts\activate
+  pip install nuitka
+
+4. Project Dependencies
+-----------------------
+  pip install -r client_pkg\requirements.txt
+  pip install bcrypt
+
+Note: bcrypt must be installed separately as it is not listed in client requirements
+but is required by the server-side imports bundled into the binary.
+
+5. Build
+--------
+From the project root:
+  scripts\build_client_win.bat
+
+Output will be at: portable_client_win\
+  EFS.bat          <- launcher (run this)
+  libs\
+    EFS_bin.exe    <- compiled binary
+    config.json    <- written by: EFS.bat configure --host <ip> --port <port>
+    *.dll, *.pyd, bcrypt\, cryptography\, ...
+
+certs\ and downloads\ are auto-created next to EFS.bat on first use.
+
+6. First Run
+------------
+  portable_client_win\EFS.bat configure --host <server-ip> --port 8443
+  portable_client_win\EFS.bat web-login
+
+No Python installation required on the target Windows machine.
+The portable_client_win\ folder is self-contained and distributable.
+
+Known Notes
+-----------
+- sys.executable in Nuitka standalone on Windows points to a Python shim, not the binary.
+  Path resolution uses sys.argv[0] instead, which Nuitka sets correctly to EFS_bin.exe.
+- Tab completion requires pyreadline3 (pip install pyreadline3). Optional — shell works without it.
+- chmod() calls on session files are no-ops on Windows (harmless, no functional impact).

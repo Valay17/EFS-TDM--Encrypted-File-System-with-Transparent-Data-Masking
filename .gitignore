@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Test / coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Runtime server data (generated on first run — do not commit)
+server_pkg/data/efs_tdm.db
+server_pkg/data/server.log
+server_pkg/data/encrypted/
+server_pkg/data/audit_*.db
+
+# Secrets — never commit private keys or the master encryption key
+server_pkg/certs/key.pem
+server_pkg/certs/master.key
+
+# Password policy cache (pulled from server on first connect)
+client_pkg/client/.password_policy.json
+portable_client/libs/.password_policy.json
+portable_client_win/libs/.password_policy.json
+
+# Nuitka build artefacts and cache
+client_pkg/compiled_binary/
+portable_client_win/compiled_binary/
+
+# Runtime config (written by client on first connect)
+client_pkg/config.json
+
+# Runtime download directories (created by client on startup)
+client_pkg/downloads/
+portable_client/downloads/
+portable_client_win/downloads/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+Thumbs.db

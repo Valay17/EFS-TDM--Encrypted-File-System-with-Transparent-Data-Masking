@@ -1,0 +1,12 @@
+{
+    "Admin": [
+        "list", "read", "write", "delete_own", "delete_any",
+        "mask", "export_raw", "manage_permissions", "manage_users",
+        "view_audit", "encrypt", "decrypt"
+    ],
+    "Analyst": ["list", "read", "mask"],
+    "Contributor": ["list", "read", "write", "delete_own"],
+    "Viewer": ["list", "read"],
+    "Auditor": ["view_audit"],
+    "Guest": ["list"]
+}
